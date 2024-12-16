@@ -76,14 +76,19 @@ pipeline {
                 sh '''
 				cd local-dev
 				. venv/bin/activate
-				flake8 . --statistics --count
+				flake8 local-dev --exclude venv
+
 				'''
             }
         }
 
         stage('Test') {
             steps {
-                sh 'cd local-dev && pytest --maxfail=1 --disable-warnings'
+                sh '''
+				cd local-dev
+				./venv/bin/activate
+				pytest --maxfail=100 --disable-warnings
+				'''
             }
         }
 
