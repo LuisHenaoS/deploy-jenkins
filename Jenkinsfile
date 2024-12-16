@@ -53,9 +53,9 @@ pipeline {
             steps {
                 echo "Clonando la rama: ${env.LOCALDEV_BRANCH}"
                 sh """
-                    git clone --branch ${env.LOCALDEV_BRANCH} https://github.com/LuisHenaoS/local-dev.git
-                    cd local-dev && ls -l
-                """
+            git clone --branch ${env.LOCALDEV_BRANCH} https://github.com/LuisHenaoS/local-dev.git
+            cd local-dev && ls -l
+        """
             }
         }
 
