@@ -86,7 +86,7 @@ pipeline {
             steps {
                 sh '''
 				cd local-dev
-				./venv/bin/activate
+				. venv/bin/activate
 				pytest --maxfail=100 --disable-warnings
 				'''
             }
