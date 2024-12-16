@@ -20,25 +20,31 @@ pipeline {
     }
 
     environment {
-        DOCKER_IMAGE = "proyecto/imagen"
-        // Inicializamos LOCALDEV_BRANCH vacio, lo llenaremos mas abajo
-        LOCALDEV_BRANCH = ""
+        DOCKER_IMAGE = 'proyecto/imagen'
+    // Inicializamos LOCALDEV_BRANCH vacio, lo llenaremos mas abajo
     }
 
     stages {
         stage('Parse branch') {
             steps {
                 script {
-                    if (!params.LOCALDEV_REF) {
-                        // Valor por defecto si no se define LOCALDEV_REF
-                        env.LOCALDEV_REF = "refs/heads/main"
-                        echo "LOCALDEV_REF no esta definido. Usando valor por defecto: ${env.LOCALDEV_REF}"
-                    } else {
-                        env.LOCALDEV_REF = params.LOCALDEV_REF
+                    // Muestra lo que recibe el parámetro
+                    echo "DEBUG Webhook variable -> params.LOCALDEV_REF = [${params.LOCALDEV_REF}]"
+
+                    def ref = params.LOCALDEV_REF
+                    if (!ref) {
+                        // Valor por defecto
+                        ref = 'refs/heads/main'
+                        echo "LOCALDEV_REF no estaba definido. Usando valor por defecto: ${ref}"
                     }
+
                     // Convertimos "refs/heads/main" a "main"
-                    env.LOCALDEV_BRANCH = env.LOCALDEV_REF.replace("refs/heads/", "")
-                    echo "LOCALDEV_BRANCH asignado a: ${env.LOCALDEV_BRANCH}"
+                    def branchName = ref.replace('refs/heads/', '')
+                    echo "LOCALDEV_BRANCH calculado: ${branchName}"
+
+                    // Guardamos en env.* para usarlo en las siguientes stages
+                    env.LOCALDEV_REF = ref
+                    env.LOCALDEV_BRANCH = branchName
                 }
             }
         }
@@ -55,23 +61,23 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh """
+                sh '''
                     cd local-dev
                     pip install --upgrade pip
                     pip install -r requirements.txt -r requirements-test.txt
-                """
+                '''
             }
         }
 
         stage('Lint') {
             steps {
-                sh "cd local-dev && flake8 . --statistics --count"
+                sh 'cd local-dev && flake8 . --statistics --count'
             }
         }
 
         stage('Test') {
             steps {
-                sh "cd local-dev && pytest --maxfail=1 --disable-warnings"
+                sh 'cd local-dev && pytest --maxfail=1 --disable-warnings'
             }
         }
 
@@ -89,6 +95,7 @@ pipeline {
                 expression { env.LOCALDEV_BRANCH == 'develop' || env.LOCALDEV_BRANCH == 'main' }
             }
             steps {
+                /* groovylint-disable-next-line LineLength */
                 withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
                     sh """
                         docker login -u $USER -p $PASS
@@ -103,7 +110,7 @@ pipeline {
                 expression { env.LOCALDEV_BRANCH == 'develop' }
             }
             steps {
-                sh "cd local-dev && bash deploy/deploy_staging.sh"
+                sh 'cd local-dev && bash deploy/deploy_staging.sh'
             }
         }
 
@@ -112,14 +119,22 @@ pipeline {
                 expression { env.LOCALDEV_BRANCH == 'main' }
             }
             steps {
-                sh "cd local-dev && bash deploy/deploy_production.sh"
+                sh 'cd local-dev && bash deploy/deploy_production.sh'
+            }
+        }
+        stage('Debug environment') {
+            steps {
+                sh 'printenv | sort'
+                script {
+                    echo "params: ${params}"
+                }
             }
         }
     }
 
     post {
         always {
-            echo "Limpiando el workspace..."
+            echo 'Limpiando el workspace...'
             cleanWs()
         }
     }
