@@ -17,7 +17,7 @@ pipeline {
 
     environment {
         DOCKER_IMAGE = "proyecto/imagen"
-        // Iniciamos LOCALDEV_BRANCH vacío; lo llenaremos más abajo
+        // Iniciamos LOCALDEV_BRANCH vaco; lo llenaremos ms abajo
         LOCALDEV_BRANCH = ""
     }
 
