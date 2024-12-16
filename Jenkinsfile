@@ -17,7 +17,7 @@ pipeline {
 
     environment {
         DOCKER_IMAGE = "proyecto/imagen"
-        // Iniciamos LOCALDEV_BRANCH vacío; lo llenaremos más abajo
+        // Inicializamos LOCALDEV_BRANCH vacio, lo llenaremos mas abajo
         LOCALDEV_BRANCH = ""
     }
 
@@ -26,13 +26,13 @@ pipeline {
             steps {
                 script {
                     if (!env.LOCALDEV_REF) {
-                        // Valor por defecto al hacer build manual
+                        // Valor por defecto si no se define LOCALDEV_REF
                         env.LOCALDEV_REF = "refs/heads/main"
-                        echo "LOCALDEV_REF no está definido, usando valor por defecto: ${env.LOCALDEV_REF}"
+                        echo "LOCALDEV_REF no esta definido. Usando valor por defecto: ${env.LOCALDEV_REF}"
                     }
-                    // Convertir "refs/heads/main" en "main"
+                    // Convertimos "refs/heads/main" a "main"
                     env.LOCALDEV_BRANCH = env.LOCALDEV_REF.replace("refs/heads/", "")
-                    echo "LOCALDEV_BRANCH set to: ${env.LOCALDEV_BRANCH}"
+                    echo "LOCALDEV_BRANCH asignado a: ${env.LOCALDEV_BRANCH}"
                 }
             }
         }
@@ -117,4 +117,3 @@ pipeline {
             cleanWs()
         }
     }
-}
