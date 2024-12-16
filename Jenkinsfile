@@ -120,7 +120,7 @@ pipeline {
                 expression { env.LOCALDEV_BRANCH == 'develop' }
             }
             steps {
-                bash ./deploy/deploy_staging.sh
+                bash './deploy/deploy_staging.sh'
             }
         }
 
@@ -129,7 +129,7 @@ pipeline {
                 expression { env.LOCALDEV_BRANCH == 'main' }
             }
             steps {
-                bash ./deploy/deploy_production.sh
+                sh './deploy/deploy_production.sh'
             }
         }
         stage('Debug environment') {
