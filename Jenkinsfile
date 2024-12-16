@@ -20,8 +20,7 @@ pipeline {
     }
 
     environment {
-        DOCKER_IMAGE = 'proyecto/imagen'
-    // Inicializamos LOCALDEV_BRANCH vacio, lo llenaremos mas abajo
+        DOCKER_IMAGE = 'luiishs/imagenDeployJenkins'
     }
 
     stages {
