@@ -9,7 +9,7 @@ pipeline {
         GenericTrigger(
             token: 'MYTOKEN',
             genericVariables: [
-                [key: 'LOCALDEV_REF', value: '$.ref']
+                [key: 'LOCALDEV_REF', value: '$.ref'] // webhook JSON $.ref => "refs/heads/main"
             ],
             causeString: 'Triggered on push from local-dev',
             printContributedVariables: true,
