@@ -86,6 +86,7 @@ pipeline {
             steps {
                 sh '''
 				cd local-dev/tests
+				export PYTHONPATH=$PYTHONPATH:/var/lib/jenkins/workspace/SinglePipeline-GenericTrigger/local-dev
 				. ../venv/bin/activate
 				pytest --maxfail=100 --disable-warnings
 				'''
