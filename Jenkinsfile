@@ -62,8 +62,8 @@ pipeline {
             steps {
                 sh '''
                     cd local-dev
-					python3 -m venv venv
-					. venv/bin/activate
+                    python3 -m venv venv
+                    . venv/bin/activate
                     pip install --upgrade pip
                     pip install -r requirements.txt -r requirements-test.txt
                 '''
@@ -73,29 +73,28 @@ pipeline {
         stage('Lint') {
             steps {
                 sh '''
-				cd local-dev
-				. venv/bin/activate
-				flake8 . --exclude venv
+                cd local-dev
+                . venv/bin/activate
+                flake8 . --exclude venv
 
-				'''
+                '''
             }
         }
 
         stage('Test') {
             steps {
                 sh '''
-				cd local-dev/tests
-				export PYTHONPATH=$PYTHONPATH:/var/lib/jenkins/workspace/SinglePipeline-GenericTrigger/local-dev
-				. ../venv/bin/activate
-				pytest --maxfail=100 --disable-warnings
-				'''
+                cd local-dev/tests
+                export PYTHONPATH=$PYTHONPATH:/var/lib/jenkins/workspace/SinglePipeline-GenericTrigger/local-dev
+                . ../venv/bin/activate
+                pytest --maxfail=100 --disable-warnings
+                '''
             }
         }
 
         stage('Build Docker') {
             steps {
                 sh """
-                    cd local-dev
                     docker build -t ${DOCKER_IMAGE}:${env.LOCALDEV_BRANCH}-${env.BUILD_NUMBER} .
                 """
             }
@@ -121,7 +120,7 @@ pipeline {
                 expression { env.LOCALDEV_BRANCH == 'develop' }
             }
             steps {
-                sh 'cd local-dev && bash deploy/deploy_staging.sh'
+                bash ./deploy/deploy_staging.sh
             }
         }
 
@@ -130,7 +129,7 @@ pipeline {
                 expression { env.LOCALDEV_BRANCH == 'main' }
             }
             steps {
-                sh 'cd local-dev && bash deploy/deploy_production.sh'
+                bash ./deploy/deploy_production.sh
             }
         }
         stage('Debug environment') {
