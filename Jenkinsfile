@@ -74,9 +74,8 @@ pipeline {
         stage('Lint') {
             steps {
                 sh '''
-				cd local-dev
 				. venv/bin/activate
-				flake8 local-dev --exclude venv
+				flake8 . --exclude venv
 
 				'''
             }
@@ -85,7 +84,6 @@ pipeline {
         stage('Test') {
             steps {
                 sh '''
-				cd local-dev
 				./venv/bin/activate
 				pytest --maxfail=100 --disable-warnings
 				'''
@@ -95,7 +93,6 @@ pipeline {
         stage('Build Docker') {
             steps {
                 sh """
-                    cd local-dev
                     docker build -t ${DOCKER_IMAGE}:${env.LOCALDEV_BRANCH}-${env.BUILD_NUMBER} .
                 """
             }
