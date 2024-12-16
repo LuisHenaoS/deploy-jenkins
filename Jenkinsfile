@@ -120,6 +120,7 @@ pipeline {
                 expression { env.LOCALDEV_BRANCH == 'develop' }
             }
             steps {
+                bash 'chmod +x deploy/deploy_staging.sh'
                 bash './deploy/deploy_staging.sh'
             }
         }
@@ -129,15 +130,8 @@ pipeline {
                 expression { env.LOCALDEV_BRANCH == 'main' }
             }
             steps {
+                sh 'chmod +x deploy/deploy_production.sh'
                 sh './deploy/deploy_production.sh'
-            }
-        }
-        stage('Debug environment') {
-            steps {
-                sh 'printenv | sort'
-                script {
-                    echo "params: ${params}"
-                }
             }
         }
     }
