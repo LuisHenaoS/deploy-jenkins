@@ -85,8 +85,8 @@ pipeline {
         stage('Test') {
             steps {
                 sh '''
-				cd local-dev
-				. venv/bin/activate
+				cd local-dev/test
+				. ../venv/bin/activate
 				pytest --maxfail=100 --disable-warnings
 				'''
             }
