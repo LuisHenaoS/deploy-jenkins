@@ -20,7 +20,7 @@ pipeline {
     }
 
     environment {
-        DOCKER_IMAGE = 'luiishs/imagenDeployJenkins'
+        DOCKER_IMAGE = 'luiishs/deployjenkins'
     }
 
     stages {

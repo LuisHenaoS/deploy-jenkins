@@ -1,7 +1,7 @@
 
 services:
   app:
-    image: proyecto/imagen:${TAG:-latest} # dinamica por si localmente quieres usar la imagen sin jenkins
+    image: luiishs/deployjenkins:${TAG:-latest} # dinamica por si localmente quieres usar la imagen sin jenkins
     container_name: app
     ports:
       - "8080:80"
