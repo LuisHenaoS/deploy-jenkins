@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    parameters {
+        string(name: 'LOCALDEV_REF', defaultValue: '', description: 'Branch ref from webhook')
+    }
+
     triggers {
         GenericTrigger(
             token: 'MYTOKEN',
@@ -25,10 +29,12 @@ pipeline {
         stage('Parse branch') {
             steps {
                 script {
-                    if (!env.LOCALDEV_REF) {
+                    if (!params.LOCALDEV_REF) {
                         // Valor por defecto si no se define LOCALDEV_REF
                         env.LOCALDEV_REF = "refs/heads/main"
                         echo "LOCALDEV_REF no esta definido. Usando valor por defecto: ${env.LOCALDEV_REF}"
+                    } else {
+                        env.LOCALDEV_REF = params.LOCALDEV_REF
                     }
                     // Convertimos "refs/heads/main" a "main"
                     env.LOCALDEV_BRANCH = env.LOCALDEV_REF.replace("refs/heads/", "")
