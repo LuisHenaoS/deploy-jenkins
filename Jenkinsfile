@@ -28,7 +28,7 @@ pipeline {
         stage('Parse branch') {
             steps {
                 script {
-                    // Muestra lo que recibe el parámetro
+                    // Muestra lo que recibe el parametro
                     echo "DEBUG Webhook variable -> params.LOCALDEV_REF = [${params.LOCALDEV_REF}]"
 
                     def ref = params.LOCALDEV_REF
