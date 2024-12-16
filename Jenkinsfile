@@ -63,6 +63,7 @@ pipeline {
             steps {
                 sh '''
                     cd local-dev
+					. venv/bin/activate
                     pip install --upgrade pip
                     pip install -r requirements.txt -r requirements-test.txt
                 '''
@@ -71,7 +72,11 @@ pipeline {
 
         stage('Lint') {
             steps {
-                sh 'cd local-dev && flake8 . --statistics --count'
+                sh '''
+				cd local-dev
+				. venv/bin/activate
+				flake8 . --statistics --count
+				'''
             }
         }
 
