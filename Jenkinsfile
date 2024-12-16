@@ -3,6 +3,7 @@ pipeline {
 
     triggers {
         GenericTrigger(
+            token: 'MYTOKEN',
             genericVariables: [
                 [key: 'LOCALDEV_REF', value: '$.ref']
             ],
