@@ -17,7 +17,7 @@ pipeline {
 
     environment {
         DOCKER_IMAGE = "proyecto/imagen"
-        // Iniciamos LOCALDEV_BRANCH vaco; lo llenaremos ms abajo
+        // Iniciamos LOCALDEV_BRANCH vacío; lo llenaremos más abajo
         LOCALDEV_BRANCH = ""
     }
 
@@ -25,6 +25,11 @@ pipeline {
         stage('Parse branch') {
             steps {
                 script {
+                    if (!env.LOCALDEV_REF) {
+                        // Valor por defecto al hacer build manual
+                        env.LOCALDEV_REF = "refs/heads/main"
+                        echo "LOCALDEV_REF no está definido, usando valor por defecto: ${env.LOCALDEV_REF}"
+                    }
                     // Convertir "refs/heads/main" en "main"
                     env.LOCALDEV_BRANCH = env.LOCALDEV_REF.replace("refs/heads/", "")
                     echo "LOCALDEV_BRANCH set to: ${env.LOCALDEV_BRANCH}"
@@ -34,14 +39,21 @@ pipeline {
 
         stage('Checkout local-dev') {
             steps {
-                sh "git clone --branch ${env.LOCALDEV_BRANCH} https://github.com/LuisHenaoS/local-dev.git"
-                sh "cd local-dev && ls -l"
+                echo "Clonando la rama: ${env.LOCALDEV_BRANCH}"
+                sh """
+                    git clone --branch ${env.LOCALDEV_BRANCH} https://github.com/LuisHenaoS/local-dev.git
+                    cd local-dev && ls -l
+                """
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                sh "cd local-dev && pip install --upgrade pip && pip install -r requirements.txt -r requirements-test.txt"
+                sh """
+                    cd local-dev
+                    pip install --upgrade pip
+                    pip install -r requirements.txt -r requirements-test.txt
+                """
             }
         }
 
@@ -59,21 +71,23 @@ pipeline {
 
         stage('Build Docker') {
             steps {
-                sh "cd local-dev && docker build -t ${DOCKER_IMAGE}:${env.LOCALDEV_BRANCH}-${env.BUILD_NUMBER} ."
+                sh """
+                    cd local-dev
+                    docker build -t ${DOCKER_IMAGE}:${env.LOCALDEV_BRANCH}-${env.BUILD_NUMBER} .
+                """
             }
         }
 
         stage('Push Docker') {
             when {
-                expression {
-                    // Solo si env.LOCALDEV_BRANCH es 'develop' o 'main'
-                    return (env.LOCALDEV_BRANCH == 'develop' || env.LOCALDEV_BRANCH == 'main')
-                }
+                expression { env.LOCALDEV_BRANCH == 'develop' || env.LOCALDEV_BRANCH == 'main' }
             }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
-                    sh "docker login -u $USER -p $PASS"
-                    sh "docker push ${DOCKER_IMAGE}:${env.LOCALDEV_BRANCH}-${env.BUILD_NUMBER}"
+                    sh """
+                        docker login -u $USER -p $PASS
+                        docker push ${DOCKER_IMAGE}:${env.LOCALDEV_BRANCH}-${env.BUILD_NUMBER}
+                    """
                 }
             }
         }
@@ -99,6 +113,7 @@ pipeline {
 
     post {
         always {
+            echo "Limpiando el workspace..."
             cleanWs()
         }
     }
