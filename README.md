@@ -1,7 +1,7 @@
 ## Introducción
 
 
-El repositorio deploy-jenkins contiene toda la configuración de Jenkins y scripts de automatización de intedración continua (CI) de la aplicación. Se asume que se integra con repositorios como local-dev y se basa en Webhooks de GitHub para ejecutar pipelines automatizados.
+El repositorio deploy-jenkins contiene toda la configuración de Jenkins y scripts de automatización de integración continua (CI) de la aplicación. Se asume que se integra con repositorios como local-dev y se basa en Webhooks de GitHub para ejecutar pipelines automatizados.
 
 2. **Arquitectura de Software**
 
