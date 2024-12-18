@@ -2,9 +2,11 @@ pipeline {
     agent any
 
     parameters {
-        string(name: 'LOCALDEV_REF', defaultValue: '', description: 'Branch ref from webhook')
+        string(name: 'LOCALDEV_REF', defaultValue: '', description: 'ref from webhook')
     }
 
+    // https://plugins.jenkins.io/generic-webhook-trigger/
+    // https://stackoverflow.com/questions/75876315/jenkins-generic-webhook-trigger-plugin-and-multibranch-scan-webhook-trigger-i
     triggers {
         GenericTrigger(
             token: 'MYTOKEN',
@@ -37,11 +39,11 @@ pipeline {
                         echo "LOCALDEV_REF no estaba definido. Usando valor por defecto: ${ref}"
                     }
 
-                    // Convertimos "refs/heads/main" a "main"
+                    // Convertimos refs/heads/main a main
                     def branchName = ref.replace('refs/heads/', '')
                     echo "LOCALDEV_BRANCH calculado: ${branchName}"
 
-                    // Guardamos en env.* para usarlo en las siguientes stages
+                    // guardamos en env.* para usarlo en las siguientes stages
                     env.LOCALDEV_REF = ref
                     env.LOCALDEV_BRANCH = branchName
                 }
